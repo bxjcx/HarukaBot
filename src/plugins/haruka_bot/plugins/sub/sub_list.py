@@ -25,6 +25,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
                 f"{user.name}（{user.uid}）"
                 f"直播：{'开' if sub.live else '关'}，"
                 f"动态：{'开' if sub.dynamic else '关'}，"
-                f"全体：{'开' if sub.at else '关'}\n"
+                f"全体：{'开' if sub.at else '关'}，"
+                f"牌子：{'开' if sub.medal else '关'}\n"
             )
     await sub_list.finish(message)

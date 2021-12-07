@@ -3,8 +3,7 @@ import traceback
 from datetime import datetime, timedelta
 
 from nonebot.log import logger
-from plugins.haruka_bot.libs.medal import Medal
-
+from ...libs.medal import Medal
 from ...libs.bilireq import BiliReq
 from ...database import DB
 from ...libs.medal import Medal
@@ -13,9 +12,9 @@ from ...utils import safe_send, scheduler
 last_medal = {}
 
 @scheduler.scheduled_job('interval', seconds=10, id='medal_sched')
-async def dy_sched():
+async def medal_sched():
     """牌子推送"""
-
+    #logger.debug(f'爬取牌子')
     async with DB() as db:
         uid = await db.next_uid('medal')
         if not uid:
@@ -27,11 +26,14 @@ async def dy_sched():
     logger.debug(f'爬取牌子 {name}（{uid}）')
     br = BiliReq()
 
-    medal = (await br.get_info(uid))['medal']#['medal_name'] # 获取牌子名
-    # if uid_info['fans_medal']['show'] == False:
-    #     return
-    # if uid_info['fans_medal']['wear'] == False:
-    #     return
+    fans_medal = (await br.get_info(uid))['fans_medal']
+    # logger.info(medal)
+    # medal=medal['medal']#['medal_name'] # 获取牌子名
+    if fans_medal['show'] == False:
+         return
+    if fans_medal['wear'] == False:
+         return
+    medal = fans_medal['medal']
     if medal == None:
         return
     medal = Medal(medal)

@@ -15,7 +15,8 @@ from .models import Group, Sub, User
 from .models import Version as DBVersion
 
 uid_list = {'live': {'list': [], 'index': 0},
-            'dynamic': {'list': [], 'index': 0}}
+            'dynamic': {'list': [], 'index': 0},
+            'medal': {'list': [], 'index': 0}}
 
 
 class DB:
@@ -46,7 +47,7 @@ class DB:
         await Group.create(id=group_id, admin=admin)
 
     async def add_sub(self, uid, type_, type_id, bot_id, name, live=True,
-                      dynamic=True, at=False) -> bool:
+                      dynamic=True, at=False, medal=False) -> bool:
         """添加订阅"""
         
         if await self.get_sub(uid, type_, type_id):
@@ -63,6 +64,7 @@ class DB:
             live=live,
             dynamic=dynamic,
             at=at,
+            medal=medal,
             bot_id=bot_id
         )
         await self.update_uid_list()
@@ -148,7 +150,7 @@ class DB:
         
 
     def _get_subs(self, uid=None, type_=None, type_id=None, live=None,
-                       dynamic=None, at=None, bot_id=None) -> QuerySet[Sub]:
+                       dynamic=None, at=None, medal=None, bot_id=None) -> QuerySet[Sub]:
         """获取指定的订阅数据"""
         
         kw = locals()
@@ -226,6 +228,8 @@ class DB:
                                              if sub.live]))
         uid_list['dynamic']['list'] = list(set([sub.uid async for sub in subs
                                                 if sub.dynamic]))
+        uid_list['medal']['list'] = list(set([sub.uid async for sub in subs
+                                                if sub.medal]))
 
     @classmethod
     async def update_user(cls, uid: int, name: str) -> bool:
@@ -263,7 +267,8 @@ class DB:
                 name = sub['name'],
                 live = sub['live'],
                 dynamic = sub['dynamic'],
-                at = sub['at']
+                at = sub['at'],
+                medal = sub['medal']
             )
         for group in groups.values():
             await self.set_permission(group['group_id'], group['admin'])

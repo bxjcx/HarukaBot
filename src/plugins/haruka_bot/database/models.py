@@ -10,6 +10,7 @@ class Sub(Model):
     dynamic = BooleanField()
     at = BooleanField()
     bot_id = IntField()
+    medal = BooleanField()
 
 
 class User(Model):
